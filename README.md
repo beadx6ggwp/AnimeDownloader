@@ -11,6 +11,8 @@ AnimeDownloader(ADL)
 
 ## Getting Started
 
+*先確認動畫集數中有"**站內**"才能下載*
+
 1. 開啟**AnimeDownloader\(ADL\)主程式**
 
 2. 到 myself-bbs.com 選擇想下載的動畫頁面, 像是 https://myself-bbs.com/thread-44659-1-1.html
@@ -18,6 +20,7 @@ AnimeDownloader(ADL)
 3. 在輸入中貼上頁面網址, 並輸入需要的參數, 按下Enert
 
 4. 完成後, 檔案會存在**AnimeDownload**資料夾中
+
 
 ```
 @params:
