@@ -1,6 +1,7 @@
 # AnimeDownloader
 AnimeDownloader(ADL)
 
+![img](example.gif)
 
 快速下載 myself-bbs.com 動畫的小工具
 
