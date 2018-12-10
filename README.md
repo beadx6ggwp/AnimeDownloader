@@ -32,6 +32,9 @@ downloadMode -[Optional] : multiThread || singleThread
 threadNum    -[Optional] : multiThread threadNum
 autoRetry    -[Optional] : when file incomplete, retrying downloads
 
+
+Example:
+
 Download all :
 > https://myself-bbs.com/thread-44659-1-1.html
 
@@ -48,6 +51,7 @@ Change image resolution to 360p (default=1080):
 
 Download episode 3 to 7 (720p)
 > https://myself-bbs.com/thread-44659-1-1.html start=3 end=7 image_res=720
+
 
 Advanced setting:
 
