@@ -53,5 +53,7 @@ Change download mode to multiThread or singlethread (default=multiThread) :
 Change threadNum (default=20) :
 > https://myself-bbs.com/thread-44659-1-1.html threadNum=30
 
+Enable/Disable autoRetry (default=False) :
+> https://myself-bbs.com/thread-44659-1-1.html autoRetry=True
 ```
 
