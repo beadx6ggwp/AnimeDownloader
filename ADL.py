@@ -35,7 +35,6 @@ url          -[Required] : myself-bbs url, like: https://myself-bbs.com/thread-4
 start        -[Optional] : start index
 end          -[Optional] : end index
 image_res    -[Optional] : image resolution
-downloadMode -[Optional] : multiThread || singleThread
 threadNum    -[Optional] : multiThread threadNum
 autoRetry    -[Optional] : when file incomplete, retrying downloads
 ---------------------------------------------------------------------------------------------
@@ -100,7 +99,7 @@ def main(arg):
 # [RequestError] : 該影片的請求無法得到正確回應
 
 
-def downloadAnime(url, start=0, end=999, image_res=1080, downloadMode='multiThread', threadNum=20, autoRetry=False):
+def downloadAnime(url, start=0, end=999, image_res=1080, threadNum=20, autoRetry=False):
     print('連接中...')
     animeContent = getAnimeContent(url)
 
@@ -118,7 +117,7 @@ def downloadAnime(url, start=0, end=999, image_res=1080, downloadMode='multiThre
     videolist = animeContent['videoRequest']
     playlist = ['%s, %s' % (k, v) for k, v in zip(eplist, videolist)]
     print('取得下載資料:\n%s' % '\n'.join(playlist))
-    print('準備下載 Mode-%s :' % downloadMode)
+    print('準備下載 Mode-%s thread :' % threadNum)
 
     pattern = r'[\\/:*?"<>|]'
 
@@ -177,16 +176,11 @@ def downloadAnime(url, start=0, end=999, image_res=1080, downloadMode='multiThre
                 print('Host:%s' % header['Host'])
 
                 download_result = False
-                if downloadMode == 'multiThread':
-                    download_result = multiThread_download(hosturl,
-                                                           file_name=filename,
-                                                           directory=directory,
-                                                           threadNum=threadNum)
-                elif downloadMode == 'singleThread':
-                    download_result = download_video(hosturl,
-                                                     headers=header,
-                                                     file_name=filename,
-                                                     directory=directory)
+
+                download_result = multiThread_download(hosturl,
+                                                       file_name=filename,
+                                                       directory=directory,
+                                                       threadNum=threadNum)
                 if download_result or not autoRetry:
                     break
                 # 如果下載失敗，就再繼續下個host
@@ -224,6 +218,11 @@ def getAnimeContent(url):
     data['eptitle'] = [query_ep(k) for k in main_list]
     return data
 
+
+
+# getVideoContent(url)
+# @parm
+# url:
 # header, 取得video list, image_resolution
 # video
 #   360	    44665/001_360P.mp4?m=agEy6298kDgCTYUmZEeu-w&e=1544111776
@@ -237,8 +236,6 @@ def getAnimeContent(url):
 
 # mySelf會檢查Referer來擋request, 所以要偽裝一個正當來源
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Range
-
-
 def getVideoContent(sourceUrl):
     # http://v.myself-bbs.com/api/files/index/44665/001/
     # http://v.myself-bbs.com/api/files/index/animeID/number/
@@ -251,7 +248,6 @@ def getVideoContent(sourceUrl):
         'Accept': 'application/json, text/javascript, */*; q=0.01',
         'Referer': sourceUrl,
         'Host': 'v.myself-bbs.com',
-
     }
 
     s = '{}/{}/{}'
@@ -276,53 +272,6 @@ def getVideoContent(sourceUrl):
         'animeID': animeID,
         'number': number
     }
-
-
-# get request header
-# Accept:video/webm,video/ogg,video/*;q…q=0.7,audio/*;q=0.6,*/*;q=0.5
-# Accept-Language:zh-TW,zh;q=0.8,en-US;q=0.5,en;q=0.3
-# Connection:keep-alive
-# Cookie:__cfduid=d09727e56811e0697a64894a682d5d5051544095407
-# DNT:1
-# Host:v1.myself-bbs.com
-# Range:bytes=0-
-# Referer:http://v.myself-bbs.com/
-# User-Agent:Mozilla/5.0 (Windows NT 10.0; …) Gecko/20100101 Firefox/63.0
-
-# http://docs.python-requests.org/en/master/api/#requests.Response
-def download_video(href, headers=None, file_name=None, directory=''):
-    if file_name == None:
-        file_name = '{}.mp4'.format(int(time.time()))
-    path = directory+'\\'+file_name
-
-    response = requests.get(href, headers=headers, stream=True)
-    # response.close()
-
-    # download started
-    with open(path, 'wb') as f:
-        totle_length = response.headers.get('content-length')
-        if totle_length == None:
-            f.write(response.content)
-        else:
-            chunk_size = 1024  # 單次請求最大值
-            totle_length = int(totle_length)  # 內容大小
-            startTime = Now()
-            dl = 0
-            print('[{}]'.format(file_name))
-            for chunk in response.iter_content(chunk_size=chunk_size):
-                if chunk:
-                    f.write(chunk)
-                    dl += len(chunk)
-                    speed = (dl/2**20) / ((Now() - startTime + 0.0001))
-                    text = '{0:>5.2f}/{1:.2f} MB |{2:>5.2f} MB/s'.format(
-                        dl / (2**20), totle_length / (2**20), speed)
-                    printProgressBar(
-                        dl, totle_length, prefix='Progress', suffix=text, length=40)
-
-    response.close()
-
-    return True
-
 
 def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='#'):
     """
@@ -356,6 +305,16 @@ def Now(): return time.time()
 # multiThread function
 
 
+# get request header
+# Accept:video/webm,video/ogg,video/*;q…q=0.7,audio/*;q=0.6,*/*;q=0.5
+# Accept-Language:zh-TW,zh;q=0.8,en-US;q=0.5,en;q=0.3
+# Connection:keep-alive
+# Cookie:__cfduid=d09727e56811e0697a64894a682d5d5051544095407
+# DNT:1
+# Host:v1.myself-bbs.com
+# Range:bytes=0-
+# Referer:http://v.myself-bbs.com/
+# User-Agent:Mozilla/5.0 (Windows NT 10.0; …) Gecko/20100101 Firefox/63.0
 def download(href, jobstatus=None, headers=None, file_name=None, directory='', chunk_size=1024):
     if file_name == None:
         file_name = '{}.mp4'.format(int(time.time()))
@@ -373,7 +332,6 @@ def download(href, jobstatus=None, headers=None, file_name=None, directory='', c
         else:
             # chunk_size = 1024  # 單次請求最大值
             totle_length = int(totle_length)  # 內容大小
-            # print(file_name, totle_length)
             for chunk in response.iter_content(chunk_size=chunk_size):
                 if chunk:
                     if not jobstatus == None:
@@ -381,7 +339,6 @@ def download(href, jobstatus=None, headers=None, file_name=None, directory='', c
                     f.write(chunk)
 
     response.close()
-
     return
 
 
@@ -407,32 +364,28 @@ def download_tasksDispatch(url, jobstatus, file_name='', directory='', threadNum
     test_res = requests.get(url, start_heradr, stream=True)
     test_res.close()
 
-    threads = []
-    start_time = 0
 
+    threads = []
     taskQueue = queue.Queue()
 
     # 先分派任務
     total = int(test_res.headers.get('content-length'))
     jobstatus['total'] = total
     # total = 5000000
-    part_time = total // (threadNum - 1)
-    # part_time = total // (threadNum)
+    start_part = 0
+    part_time = total // max(threadNum - 1, 1)
 
     # print('檔案大小:%d, 分割%d, 每份%d' % (total, threadNum, part_time))
     for i in range(threadNum):  # threadNum-0
-        header = {
-            'Accept': 'video/webm,video/ogg,video/*;q=0.9,application/ogg;q=0.7,audio/*;q=0.6,*/*;q=0.5',
-            'Referer': 'http://v.myself-bbs.com/',
-            'Range': 'bytes=0-'
-        }
+        header = start_heradr.copy()
         s = 'bytes={}-{}'
-        header['Range'] = s.format(
-            start_time, start_time+part_time-1)  # start<= x <= end
-        if i == threadNum-1:
-            header['Range'] = s.format(start_time, '')
+        # Range : start<= x <= end
+        header['Range'] = s.format(start_part,
+                                   start_part + part_time-1)  
+        if i == threadNum - 1:
+            header['Range'] = s.format(start_part, '')
 
-        start_time += part_time
+        start_part += part_time
         taskQueue.put({
             'index': i,
             'header': header
@@ -440,7 +393,7 @@ def download_tasksDispatch(url, jobstatus, file_name='', directory='', threadNum
 
     downloadTime = time.time()
 
-    # 依序執行
+    # 啟用執行序
     for i in range(0, threadNum):
         t = threading.Thread(target=thread_download, args=(
             taskQueue, jobstatus, url, partPath))
@@ -450,16 +403,16 @@ def download_tasksDispatch(url, jobstatus, file_name='', directory='', threadNum
     # 等待全部完成
     for t in threads:
         t.join()
+    jobstatus['isDone'] = True
 
     endTime = time.time()
 
     # 完成後將part檔案合併為mp4
     merge_folderFile(partPath, newFileName=file_name, directory=directory)
 
-    # 完成後將part檔案刪除
+    # 並將part檔案刪除
     shutil.rmtree(partPath)
 
-    jobstatus['isDone'] = True
     # print("完成下載, Time cost: %s\n" % (endTime - startTime))
 
 
@@ -487,29 +440,11 @@ def merge_folderFile(path, newFileName=None, directory=''):
 def thread_download(taskQueue, jobstatus, url, directory):
     while not taskQueue.empty():
         task = taskQueue.get_nowait()
-        # print('index:%d Current Thread Name %s' %
-        #       (task['index'], threading.currentThread().name))
-
         download(url,
                  headers=task['header'],
                  file_name='part_%d' % task['index'],
                  directory=directory,
                  jobstatus=jobstatus)
-
-
-def printThreadProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='#'):
-    percent = ("{0:." + str(decimals) + "f}").format(100 *
-                                                     (iteration / float(total)))
-    filledLength = int(length * iteration // total)
-    bar = fill * filledLength + '-' * (length - filledLength)
-    print(('{0} |{1}|{2:>'+str(4 + decimals) + 's}% |{3}').format(prefix,
-                                                                  bar, percent, suffix), end='\r')
-    # Print New Line on Complete
-    if iteration == total:
-        sys.stdout.write('\x1b[K')
-        print(('{0} |{1}|{2:>'+str(4 + decimals) + 's}% | {3}').format(prefix,
-                                                                       bar, percent, 'Done!'), end='\r')
-        # print()
 
 
 def showStatus(jobstatus):
@@ -519,10 +454,13 @@ def showStatus(jobstatus):
         speed = (dl/2**20) / ((time.time() - jobstatus['startTime']))
         text = '{0:>5.2f}/{1:.2f} MB |{2:>5.2f} MB/s'.format(dl / (2**20),
                                                              totle_length / (2**20), speed)
-        printThreadProgressBar(
-            dl, totle_length, prefix='Progress', suffix=text, length=40)
+        printProgressBar(dl, totle_length, prefix='Progress',
+                         suffix=text, length=40)
+
+        # 這個延遲是為了在下載任務剛完成，主執行續還沒執行到jobstatus['isDone']=True時，有一段時間差
+        # 在這之前這會多跑好幾次isDone，所以用一個小延遲來等待主執行續設定isDone=True
+        time.sleep(0.01)
         if jobstatus['isDone']:
-            print()
             break
 
 
@@ -534,14 +472,16 @@ def multiThread_download(url, file_name='', directory='', threadNum=20):
         'startTime': time.time()-0.1
     }
 
+    print('[{}]'.format(file_name))
+
     spinner = threading.Thread(target=showStatus, args=(jobstatus,))
     # print('spinner object:', spinner)
-    print('[{}]'.format(file_name))
     spinner.start()
 
     download_tasksDispatch(url, jobstatus,
                            file_name=file_name, directory=directory, threadNum=threadNum)
     spinner.join()
+
     if jobstatus['count'] != jobstatus['total']:
         print('[Incomplete download] : %s, %d/%d' %
               (file_name, jobstatus['count'], jobstatus['total']))
@@ -552,7 +492,3 @@ def multiThread_download(url, file_name='', directory='', threadNum=20):
 # main
 if __name__ == '__main__':
     main(sys.argv)
-    # downloadFile('http://v25.myself-bbs.com/44624/001_360P.mp4?m=KcRLtU2qq2qj6Kuu_qtS8A&e=1544200797', '')
-    # download_video(
-    #     "http://v25.myself-bbs.com/44624/001_360P.mp4?m=KcRLtU2qq2qj6Kuu_qtS8A&e=1544200797", 'test.mp4')
-    # download_video("http://v1.myself-bbs.com/44665/001_1080P.mp4?m=tqMc76s-RRgqsJU3Z8JDmA&e=1544111776",'test.mp4')

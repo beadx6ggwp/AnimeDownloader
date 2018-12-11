@@ -28,7 +28,6 @@ url          -[Required] : myself-bbs url, like: https://myself-bbs.com/thread-4
 start        -[Optional] : start index
 end          -[Optional] : end index
 image_res    -[Optional] : image resolution
-downloadMode -[Optional] : multiThread || singleThread
 threadNum    -[Optional] : multiThread threadNum
 autoRetry    -[Optional] : when file incomplete, retrying downloads
 
@@ -55,11 +54,8 @@ Download episode 3 to 7 (720p)
 
 Advanced setting:
 
-Change download mode to multiThread or singlethread (default=multiThread) :
-> https://myself-bbs.com/thread-44659-1-1.html downloadMode=singleThread
-
 Change threadNum (default=20) :
-> https://myself-bbs.com/thread-44659-1-1.html threadNum=30
+> https://myself-bbs.com/thread-44659-1-1.html threadNum=1
 
 Enable/Disable autoRetry (default=False) :
 > https://myself-bbs.com/thread-44659-1-1.html autoRetry=True
