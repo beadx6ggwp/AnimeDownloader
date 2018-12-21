@@ -74,6 +74,7 @@ def main(arg):
             os.system('pause')
             return
         except Exception as e:
+            print(e)
             print('[InputError] Please retry')
 
     # use command
@@ -96,6 +97,7 @@ def main(arg):
 # [ConnectionError]: 無法連上網站
 # [Video RequestError] :無法取得影片
 # [Incomplete download]:下載不完整
+
 
 def downloadAnime(url, start=0, end=999, image_res=1080, threadNum=20, autoRetry=False):
     print('連接中...')
@@ -254,6 +256,8 @@ def getVideoContent(sourceUrl):
     data = r.json()
 
     items = data['video'].items()
+    items = [[re.sub(r'[^0-9]', "", k), v]
+             for k, v in items if len(re.sub(r'[^0-9]', "", k))]
 
     videoUrl = {}
     items_sorted = sorted(items, key=lambda x: int(x[0]), reverse=True)
@@ -368,7 +372,6 @@ def download_tasksDispatch(url, jobstatus, file_name='', directory='', threadNum
     test_res = requests.get(url, start_heradr, stream=True)
     test_res.close()
 
-
     # 先分派任務
     threads = []
     total = int(test_res.headers.get('content-length'))
@@ -393,8 +396,8 @@ def download_tasksDispatch(url, jobstatus, file_name='', directory='', threadNum
 
         part_name = 'part_%d' % downloadIndex
         task = threading.Thread(target=download,
-                             args=(url, header, jobstatus,
-                                   part_name, partPath))
+                                args=(url, header, jobstatus,
+                                      part_name, partPath))
         task.setDaemon(True)
         task.start()
         threads.append(task)
@@ -434,6 +437,7 @@ def merge_folderFile(path, newFileName=None, directory=''):
             with open(path+'\\'+file, 'rb') as part_file:
                 result.write(part_file.read())
         pass
+
 
 def showStatus(jobstatus):
     while True:
