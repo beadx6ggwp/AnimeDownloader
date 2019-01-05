@@ -1,0 +1,97 @@
+[InputError]:輸入的啟動參數有誤
+[ConnectionError]: 無法連上網站
+[Video RequestError] :無法取得影片
+[Incomplete download]:下載不完整
+
+
+just beacuse 第9集是用ts方法下載，待解決
+
+
+getAnimeContent : 
+傳入該部動漫的頁面，以取得每一集的請求連結
+
+getAnimeContent(http://myself-bbs.com/thread-44659-1-1.html)
+'animeTitle':'刀劍神域 第三季/刀劍神域 Alicization'
+'eptitle':
+  00:'第 01 話 地底世界'
+  01:'第 02 話 惡魔之樹'
+  02:'第 03 話 盡頭山脈'
+  03:'第 04 話 啟程'
+  04:'第 05 話 海龜'
+  05:'第 06 話 Alicization計劃'
+  06:'第 07 話 劍的學舍'
+  07:'第 08 話 劍士的矜持'
+  08:'第 09 話 貴族的責任'
+  09:'第 10 話 禁忌目錄'
+'videoRequest':
+  00:'https://v.myself-bbs.com/player/play/44659/001'
+  01:'https://v.myself-bbs.com/player/play/44659/002'
+  02:'https://v.myself-bbs.com/player/play/44659/003'
+  03:'https://v.myself-bbs.com/player/play/44659/004'
+  04:'https://v.myself-bbs.com/player/play/44659/005'
+  05:'https://v.myself-bbs.com/player/play/44659/006'
+  06:'https://v.myself-bbs.com/player/play/44659/007'
+  07:'https://v.myself-bbs.com/player/play/44659/008'
+  08:'https://v.myself-bbs.com/player/play/44659/009'
+  09:'https://v.myself-bbs.com/player/play/44659/010'
+
+---------------------------------------------------------
+
+getVideoContent :
+傳入每一集的請求連結，回傳該影片的實際請求連結
+
+getVideoContent('https://v.myself-bbs.com/player/play/44659/001')
+
+實際影片的請求位置
+'http://v.myself-bbs.com/api/files/index'
+http://v.myself-bbs.com/api/files/index/animeID/number/
+
+'animeID':'44659'
+'number':'001'
+'host':
+  00:'http://v3.myself-bbs.com/'
+  01:'http://v1.myself-bbs.com/'
+  02:'http://v15.myself-bbs.com/'
+  03:'http://v25.myself-bbs.com/'
+  04:'http://v13.myself-bbs.com/'
+'video':
+  0:('1080', '44659/001_1080P.mp4...544456336')
+  1:('720', '44659/001_720P.mp4?...544456336')
+  2:('480', '44659/001_480P.mp4?...544456336')
+  3:('360', '44659/001_360P.mp4?...544456336')
+
+---------------------------------------------------------
+
+最後透過binary方式接收並下載檔案
+
+多執行續下載:
+因為myself-bbs有限制單個請求的上傳流量
+
+所以先取得檔案大小，將其分割成N份，接著分派給N個執行序，非同步發起請求，最後將N個檔案按照順序串接成mp4輸出
+
+再用另一個執行序監聽狀態，即時顯示下載狀況
+
+
+--------------------------------------------------------
+
+momovod下載
+
+先到全集連結:https://www.momovod.com/vod-detail-id-61424.html
+
+擷取iframe Video標籤 : https://www.momovod.com/player/ckplayer/index.php?url=https://youku.iqiyi-yongjiu.com/20181014/useb9mNS/index.m3u8&title=刀劍神域第三季第01集 動漫 高清影音線上看 - MoMoVOD
+在前面加上https，因為直接連接為http，他會再做轉址到https
+
+接著擷取<script> file = 'https://youku.iqiyi-yongjiu.com/20181014/useb9mNS/index.m3u8'
+
+會得到:/ppvod/56AD1D0B13AC1D07508AE1AFBD0D7BE2.m3u8
+
+再接上:https://youku.iqiyi-yongjiu.com/ppvod/56AD1D0B13AC1D07508AE1AFBD0D7BE2.m3u8
+得到每part的檔案:/20181014/useb9mNS/800kb/hls/NnQVBTgn3384000.ts
+
+接著再串到:https://youku.iqiyi-yongjiu.com/20181014/useb9mNS/800kb/hls/NnQVBTgn3384000.ts
+以此類推
+
+
+
+
+

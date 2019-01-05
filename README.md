@@ -1,63 +1,53 @@
 # AnimeDownloader
+
 AnimeDownloader(ADL)
 
-![img](example.gif)
+![img](https://i.imgur.com/pkHFupn.gif)
 
-快速下載 myself-bbs.com 動畫的小工具
+快速下載動畫的小工具
 
 ## Installation
 
-主程式下載 : [AnimeDownloader(ADL)](https://github.com/md9830415/AnimeDownloader/releases)
+主程式下載 : [AnimeDownloader v1.1](https://github.com/md9830415/AnimeDownloader/releases/tag/v1.1)
 
 ## Getting Started
 
-*先確認動畫集數中有"**站內**"才能下載*
-
 1. 開啟**AnimeDownloader\(ADL\)主程式**
 
-2. 到 myself-bbs.com 選擇想下載的動畫頁面, 像是 https://myself-bbs.com/thread-44659-1-1.html
+2. 到 momovod 選擇想下載的動畫頁面, 像是 https://www.momovod.com/vod-detail-id-61424.html
 
 3. 在輸入中貼上頁面網址, 並輸入需要的參數, 按下Enert
 
 4. 完成後, 檔案會存在**AnimeDownload**資料夾中
 
+*注意: chromedriver.exe為必要檔案，請勿任意刪除*
 
 ```
+
 @params:
-url          -[Required] : myself-bbs url, like: https://myself-bbs.com/thread-44659-1-1.html
+url          -[Required] : myself-bbs url, like: https://www.momovod.com/vod-detail-id-61424.html
 start        -[Optional] : start index
 end          -[Optional] : end index
-image_res    -[Optional] : image resolution
 threadNum    -[Optional] : multiThread threadNum
-autoRetry    -[Optional] : when file incomplete, retrying downloads
 
 
 Example:
 
 Download all :
-> https://myself-bbs.com/thread-44659-1-1.html
+> https://www.momovod.com/vod-detail-id-61424.html
 
 Download episode 3 to 7 :
-> https://myself-bbs.com/thread-44659-1-1.html start=3 end=7
+> https://www.momovod.com/vod-detail-id-61424.html start=2 end=6
 
 Just download episode 3 :
-> https://myself-bbs.com/thread-44659-1-1.html start=3 end=3
+> https://www.momovod.com/vod-detail-id-61424.html start=2 end=2
 
 Note: indexing start with 0
-
-Change image resolution to 360p (default=1080):
-> https://myself-bbs.com/thread-44659-1-1.html image_res=360
-
-Download episode 3 to 7 (720p)
-> https://myself-bbs.com/thread-44659-1-1.html start=3 end=7 image_res=720
 
 
 Advanced setting:
 
-Change threadNum (default=20) :
-> https://myself-bbs.com/thread-44659-1-1.html threadNum=1
+Change threadNum (default=64) :
+> https://www.momovod.com/vod-detail-id-61424.html threadNum=128
 
-Enable/Disable autoRetry (default=False) :
-> https://myself-bbs.com/thread-44659-1-1.html autoRetry=True
 ```
-
