@@ -156,7 +156,8 @@ def getAnimeContent(url):
 
     main_list = soup.find_all('div', class_='playlist collapse')[0]
     ep_list = main_list.select('ul > li > a')
-    ep_list = sorted(ep_list, key=lambda x: x['title'])
+    ep_list = list(reversed(ep_list))
+    # ep_list = sorted(ep_list, key=lambda x: x['title'])
 
     data['animeTitle'] = animeTitle
     data['videoRequest'] = [momovodUrl + k['href'] for k in ep_list]
