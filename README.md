@@ -8,7 +8,7 @@ AnimeDownloader(ADL)
 
 ## Installation
 
-主程式下載 : [AnimeDownloader v1.1](https://github.com/md9830415/AnimeDownloader/releases/tag/v1.1)
+主程式下載 : [AnimeDownloader(ADL) v1.1](https://github.com/md9830415/AnimeDownloader/releases/tag/v1.1)
 
 ## Getting Started
 
