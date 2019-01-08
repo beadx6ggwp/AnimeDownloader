@@ -253,6 +253,7 @@ def showStatus(jobstatus):
         # 如果progressBar完成後有print()，就要啟用延遲
         # 這個延遲是為了在下載任務剛完成，主執行續還沒執行到jobstatus['isDone']=True時，有一段時間差
         # 在這之前這會多跑好幾次isDone，所以用一個小延遲來等待主執行續設定isDone=True
+        time.sleep(0.15)
         if jobstatus['isDone']:
             print()
             break
@@ -276,11 +277,11 @@ def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=
     print(('{0} |{1}|{2:>'+str(4 + decimals) + 's}% |{3}').format(prefix,
                                                                   bar, percent, suffix), end='\r')
     # Print New Line on Complete
-    if iteration == total:
-        sys.stdout.write('\x1b[K')
-        print(('{0} |{1}|{2:>'+str(4 + decimals) + 's}% | {3}').format(prefix,
-                                                                       bar, percent, 'Done!'), end='\r')
-        # print()
+    # if iteration == total:
+    #     sys.stdout.write('\x1b[K')
+    #     print(('{0} |{1}|{2:>'+str(4 + decimals) + 's}% | {3}').format(prefix,
+    #                                                                    bar, percent, 'Done!'), end='\r')
+    #     # print()
 
 
 def Now(): return time.time()
@@ -304,7 +305,9 @@ def download(href, headers=None, jobstatus=None, file_name=None, directory='', c
     path = directory+'\\'+file_name
 
     response = requests.get(href, headers=headers, stream=True)
-
+    response.close()
+    if response.status_code!=200:return
+    response = requests.get(href, headers=headers, stream=True)
     # download started
     if jobstatus != None:
         jobstatus['count'] += 1
